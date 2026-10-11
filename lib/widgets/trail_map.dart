@@ -74,11 +74,11 @@ class _TrailMapViewState extends State<TrailMapView> {
           ),
           children: [
             TileLayer(
-              // CartoDB Voyager tiles: free, reliable, OSM-based.
-              // (tile.openstreetmap.org rate-limits mobile clients.)
+              // Esri World Topo: free, no API key, topographic detail
+              // ideal for hiking. (CartoDB now requires an API key;
+              // OSM standard tiles rate-limit mobile clients.)
               urlTemplate:
-                  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-              subdomains: const ['a', 'b', 'c', 'd'],
+                  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
               userAgentPackageName: 'com.vineeth.trail_blaze',
               errorTileCallback: (tile, error, stackTrace) {
                 if (mounted && !_tileError) {
