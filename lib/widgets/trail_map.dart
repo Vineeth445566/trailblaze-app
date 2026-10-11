@@ -74,8 +74,11 @@ class _TrailMapViewState extends State<TrailMapView> {
           ),
           children: [
             TileLayer(
+              // CartoDB Voyager tiles: free, reliable, OSM-based.
+              // (tile.openstreetmap.org rate-limits mobile clients.)
               urlTemplate:
-                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+              subdomains: const ['a', 'b', 'c', 'd'],
               userAgentPackageName: 'com.vineeth.trail_blaze',
               errorTileCallback: (tile, error, stackTrace) {
                 if (mounted && !_tileError) {
