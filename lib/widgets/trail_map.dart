@@ -10,6 +10,7 @@ class TrailMapView extends StatefulWidget {
   final List<LatLng>? livePath;
   final LatLng? livePosition;
   final double initialZoom;
+  final List<Marker> extraMarkers;
 
   const TrailMapView({
     super.key,
@@ -18,6 +19,7 @@ class TrailMapView extends StatefulWidget {
     this.livePath,
     this.livePosition,
     this.initialZoom = 13,
+    this.extraMarkers = const [],
   });
 
   @override
@@ -143,7 +145,8 @@ class _TrailMapViewState extends State<TrailMapView> {
                   ),
                 ],
               ),
-            MarkerLayer(markers: markers),
+            MarkerLayer(
+                markers: [...markers, ...widget.extraMarkers]),
           ],
         ),
         if (_tileError)

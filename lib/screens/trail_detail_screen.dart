@@ -6,6 +6,7 @@ import '../data/trails.dart';
 import '../models/trail.dart';
 import '../services/storage_service.dart';
 import '../widgets/trail_map.dart';
+import 'trail_map_fullscreen.dart';
 import '../widgets/trail_widgets.dart';
 import 'record_screen.dart';
 
@@ -236,14 +237,51 @@ class _TrailDetailScreenState extends State<TrailDetailScreen> {
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: SizedBox(
-                      height: 240,
-                      child: TrailMapView(
-                        routePoints: t.routePoints,
-                        trailhead: t.trailhead,
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            TrailMapFullscreenScreen(trail: t),
                       ),
+                    ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: SizedBox(
+                            height: 240,
+                            child: TrailMapView(
+                              routePoints: t.routePoints,
+                              trailhead: t.trailhead,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 12,
+                          bottom: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius:
+                                  BorderRadius.circular(20),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.fullscreen,
+                                    color: Colors.white, size: 16),
+                                SizedBox(width: 4),
+                                Text('Tap to expand',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 4),
