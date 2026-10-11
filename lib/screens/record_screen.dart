@@ -41,7 +41,7 @@ class _RecordScreenState extends State<RecordScreen> {
   String? _permMessage; // shown when permissions block recording
   bool _checkingPerm = false;
 
-  static const _phoenixCenter = LatLng(33.4484, -112.0740);
+  static const _defaultCenter = LatLng(39.8283, -98.5795);
 
   @override
   void dispose() {
@@ -309,7 +309,7 @@ class _RecordScreenState extends State<RecordScreen> {
           Expanded(
             child: TrailMapView(
               routePoints: const [],
-              trailhead: _currentLatLng ?? _phoenixCenter,
+              trailhead: _currentLatLng ?? _defaultCenter,
               livePath: _path,
               livePosition: _currentLatLng,
               initialZoom: _currentLatLng != null ? 15 : 11,

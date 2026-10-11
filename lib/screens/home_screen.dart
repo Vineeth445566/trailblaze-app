@@ -18,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _searchCtrl = TextEditingController();
   String _query = '';
   final Set<Difficulty> _difficulties = {};
-  double _maxDistance = 15;
+  final Set<String> _states = {}; // empty = all states
+  double _maxDistance = 25;
   bool _dogFriendlyOnly = false;
   Set<String> _savedIds = {};
 
@@ -47,12 +48,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// All states present in the trail database, alphabetical.
+  List<String> get _allStates {
+    final s = allTrails.map((t) => t.state).toSet().toList();
+    s.sort();
+    return s;
+  }
+
   List<Trail> get _filtered {
-    return phoenixTrails.where((t) {
+    return allTrails.where((t) {
       if (_query.isNotEmpty) {
         final q = _query.toLowerCase();
-        final hay = '${t.name} ${t.park} ${t.tags.join(' ')}'.toLowerCase();
+        final hay =
+            '${t.name} ${t.park} ${t.state} ${t.tags.join(' ')}'
+                .toLowerCase();
         if (!hay.contains(q)) return false;
+      }
+      if (_states.isNotEmpty && !_states.contains(t.state)) {
+        return false;
       }
       if (_difficulties.isNotEmpty && !_difficulties.contains(t.difficulty)) {
         return false;
@@ -80,11 +93,24 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Explore ${_filtered.length} iconic trails across the USA',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: TextField(
               controller: _searchCtrl,
               decoration: InputDecoration(
-                hintText: 'Search trails, parks, tags...',
+                hintText: 'Search trails, parks, states...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
@@ -147,6 +173,36 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildFilterRow() {
     return Column(
       children: [
+        // State filter
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: const Text('All states'),
+                  avatar: const Icon(Icons.public, size: 16),
+                  selected: _states.isEmpty,
+                  onSelected: (_) =>
+                      setState(() => _states.clear()),
+                ),
+              ),
+              for (final st in _allStates)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(st),
+                    selected: _states.contains(st),
+                    onSelected: (sel) => setState(() {
+                      sel ? _states.add(st) : _states.remove(st);
+                    }),
+                  ),
+                ),
+            ],
+          ),
+        ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -184,8 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Slider(
                   value: _maxDistance,
                   min: 1,
-                  max: 15,
-                  divisions: 14,
+                  max: 25,
+                  divisions: 24,
                   label: 'Up to ${_maxDistance.toStringAsFixed(0)} mi',
                   onChanged: (v) =>
                       setState(() => _maxDistance = v),
@@ -263,7 +319,7 @@ class _TrailCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    trail.park,
+                    '${trail.park} · ${trail.state}',
                     style: TextStyle(
                       color: scheme.onSurfaceVariant,
                       fontSize: 13,

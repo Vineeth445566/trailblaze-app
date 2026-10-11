@@ -43,7 +43,7 @@ class _SavedScreenState extends State<SavedScreen> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final saved =
-        phoenixTrails.where((t) => _savedIds.contains(t.id)).toList();
+        allTrails.where((t) => _savedIds.contains(t.id)).toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Saved trails')),
       body: _loading

@@ -21,6 +21,7 @@ class Trail {
   final String id;
   final String name;
   final String park;
+  final String state; // e.g. 'Arizona'
   final double lat;
   final double lng;
   final double lengthMiles;
@@ -39,6 +40,7 @@ class Trail {
     required this.id,
     required this.name,
     required this.park,
+    required this.state,
     required this.lat,
     required this.lng,
     required this.lengthMiles,
