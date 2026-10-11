@@ -26,6 +26,35 @@ class TrailMapView extends StatefulWidget {
 
 class _TrailMapViewState extends State<TrailMapView> {
   bool _tileError = false;
+  final MapController _mapController = MapController();
+  bool _fitted = false;
+
+  /// Zoom the map to fit the full route once the map is ready.
+  void _fitRoute() {
+    if (_fitted || widget.routePoints.isEmpty) return;
+    _fitted = true;
+    var minLat = widget.routePoints.first.latitude;
+    var maxLat = minLat;
+    var minLng = widget.routePoints.first.longitude;
+    var maxLng = minLng;
+    for (final p in widget.routePoints) {
+      if (p.latitude < minLat) minLat = p.latitude;
+      if (p.latitude > maxLat) maxLat = p.latitude;
+      if (p.longitude < minLng) minLng = p.longitude;
+      if (p.longitude > maxLng) maxLng = p.longitude;
+    }
+    // Pad the bounds so the route isn't edge-to-edge.
+    const pad = 0.004;
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: LatLngBounds(
+          LatLng(minLat - pad, minLng - pad),
+          LatLng(maxLat + pad, maxLng + pad),
+        ),
+        padding: const EdgeInsets.all(24),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +94,14 @@ class _TrailMapViewState extends State<TrailMapView> {
     return Stack(
       children: [
         FlutterMap(
+          mapController: _mapController,
           options: MapOptions(
             initialCenter: widget.trailhead,
             initialZoom: widget.initialZoom,
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.all,
             ),
+            onMapReady: _fitRoute,
           ),
           children: [
             TileLayer(
@@ -89,6 +120,12 @@ class _TrailMapViewState extends State<TrailMapView> {
             if (widget.routePoints.isNotEmpty)
               PolylineLayer(
                 polylines: [
+                  // White halo for contrast against the topo background.
+                  Polyline(
+                    points: widget.routePoints,
+                    color: Colors.white,
+                    strokeWidth: 7,
+                  ),
                   Polyline(
                     points: widget.routePoints,
                     color: scheme.primary,
